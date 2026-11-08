@@ -4,6 +4,7 @@ import { findBlender } from "./blender.js";
 import { resolveConfig } from "./config.js";
 import { JobManager } from "./jobs.js";
 import { WorkerManager } from "./worker.js";
+import { AttaBridge } from "./atta.js";
 import { ensureDir, projectKey, tempRoot } from "./util.js";
 export function createHost(projectDir, options) {
     const config = resolveConfig(options);
@@ -22,6 +23,7 @@ export function createHost(projectDir, options) {
         lastFrames: new Map(),
         workers: undefined,
         jobs: undefined,
+        atta: undefined,
         blenderProbe() {
             if (!probe)
                 probe = findBlender(config.blenderPath);
@@ -33,5 +35,6 @@ export function createHost(projectDir, options) {
     };
     host.workers = new WorkerManager({ blender: () => host.blenderPath(), dataDir, ttlMs: config.workerTtlMs });
     host.jobs = new JobManager({ blenderPath: () => host.blenderPath(), dataDir });
+    host.atta = new AttaBridge(host);
     return host;
 }

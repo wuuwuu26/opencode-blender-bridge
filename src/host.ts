@@ -4,6 +4,7 @@ import { findBlender, type BlenderProbe } from "./blender.js"
 import { resolveConfig, type BridgeConfig } from "./config.js"
 import { JobManager } from "./jobs.js"
 import { WorkerManager } from "./worker.js"
+import { AttaBridge } from "./atta.js"
 import { ensureDir, projectKey, tempRoot } from "./util.js"
 
 export interface Host {
@@ -11,6 +12,7 @@ export interface Host {
   bridge: BridgeClient
   workers: WorkerManager
   jobs: JobManager
+  atta: AttaBridge
   projectDir: string
   dataDir: string
   framesDir: string
@@ -39,6 +41,7 @@ export function createHost(projectDir: string, options: unknown): Host {
     lastFrames: new Map(),
     workers: undefined as unknown as WorkerManager,
     jobs: undefined as unknown as JobManager,
+    atta: undefined as unknown as AttaBridge,
     blenderProbe() {
       if (!probe) probe = findBlender(config.blenderPath)
       return probe
@@ -49,5 +52,6 @@ export function createHost(projectDir: string, options: unknown): Host {
   }
   host.workers = new WorkerManager({ blender: () => host.blenderPath(), dataDir, ttlMs: config.workerTtlMs })
   host.jobs = new JobManager({ blenderPath: () => host.blenderPath(), dataDir })
+  host.atta = new AttaBridge(host)
   return host
 }

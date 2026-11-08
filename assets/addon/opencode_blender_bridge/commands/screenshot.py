@@ -22,17 +22,18 @@ def _resolve_path(filepath, format="png"):
 def _frame_camera(scene, location=None, look_at=None, lens=50.0, ortho=False, ortho_scale=10.0):
     data = bpy.data.cameras.new("__ocbb_cam__")
     data.lens = float(lens or 50.0)
-    data.clip_start = 0.01
     if ortho:
         data.type = "ORTHO"
         data.ortho_scale = float(ortho_scale or 10.0)
     obj = bpy.data.objects.new("__ocbb_cam__", data)
     scene.collection.objects.link(obj)
     lo, hi, radius = U.scene_bbox()
+    data.clip_start = max(0.0005, min(0.02, radius * 0.005)) if radius else 0.001
+    data.clip_end = max(10.0, radius * 100.0)
     center = (lo + hi) / 2.0 if radius else Vector((0, 0, 0))
     if location is None:
         direction = Vector((1.0, -1.4, 0.8)).normalized()
-        distance = max(radius * 3.2, 2.0)
+        distance = max(radius * 4.2, 0.04)
         obj.location = center + direction * distance
     else:
         obj.location = Vector(U.parse_vec(location, [7, -7, 5]))
@@ -41,7 +42,7 @@ def _frame_camera(scene, location=None, look_at=None, lens=50.0, ortho=False, or
     if direction.length < 1e-6:
         direction = Vector((0, 0, -1))
     obj.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-    data.clip_end = max(1000.0, (obj.location - center).length + radius * 20.0)
+    data.clip_end = max(data.clip_end, (obj.location - center).length + radius * 20.0)
     if ortho and ortho_scale is None:
         data.ortho_scale = max(radius * 2.4, 0.1)
     if not ortho:

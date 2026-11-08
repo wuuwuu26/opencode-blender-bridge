@@ -1,12 +1,13 @@
 # OpenCode × Blender Bridge
 
-让 OpenCode 直接驱动一个真实的 Blender 会话：看视口、改一步、再看一眼，并能无头批处理、渲染、审计和导出。
+让 OpenCode 直接驱动一个真实的 Blender 会话：看视口、改一步、再看一眼，并能无头批处理、渲染、审计和导出。参数化 CAD 零件可交给 **Atta**：量测事实、三态验证、Blender 交付。
 
 [English](README.md) | **简体中文**
 
 - **GUI 优先**：Agent 操作你正在看的那个 Blender 场景，每次改完立刻回一帧。
 - **无头可用**：没有 GUI 时自动降级到常驻 `blender -b` worker，视口帧仍然在。
-- **15 个工具**：`see / do / watch / plan / worker / viewport / headless / job / loop / txn / preset / perf / opt / cmd / commands`。
+- **16 个工具**：`see / do / watch / plan / worker / viewport / headless / job / loop / txn / preset / perf / opt / cmd / commands / cad`。
+- **参数化 CAD**：Atta spec 与 23 个 recipe；先量测后出图，`pass`/`degraded`/`fail` 三态验证，GLB/STEP 交付并导入当前场景。
 - **56 个 add-on 命令**：场景、对象、材质、相机、灯光、渲染、导出、审计、性能。
 - **只走本机回环**：监听 `127.0.0.1:9876`，不经过任何云服务。
 
@@ -108,6 +109,7 @@ blender_rt_worker(op="see", name="main")
 | `blender_rt_opt` | 查找可安全合并的对象（只报告，合并需显式调用） |
 | `blender_rt_cmd` | 直接调用任意 add-on 命令 |
 | `blender_rt_commands` | 列出当前可用的 add-on 命令 |
+| `blender_rt_cad` | 通过 Atta 做参数化 CAD：spec/model/describe/verify/preview/deliver/import/setup |
 
 ### 常用流程
 
@@ -125,7 +127,50 @@ blender_rt_plan(op="export.scene", args={filepath:"out/body.glb"})
 
 ---
 
-## 3. 配置
+## 3. 参数化 CAD（Atta）
+
+插件把 [Atta](https://github.com/laszapens/Atta)（MIT，LLM 原生的参数化 CAD 内核）融合为 `blender_rt_cad` 工具。它是可选项，不装也不影响 Blender 工具。
+
+- **spec 就是模型**：recipe 或 `atta.spec/v3` 特征图可确定性重建。
+- **先事实后像素**：`describe` 在 1 秒内返回包围盒、体积、拓扑、壁厚、射线和 ASCII 视图。
+- **三态闸门**：`verify` 返回 `pass` / `degraded` / `fail` 与回执；`deliver` 拒绝非 `pass`（`degraded` 需显式覆盖）。
+- **Blender 交付**：`preview` 用常驻 Blender worker 渲染；`import` 交付 GLB 并直接导入当前 OpenCode Blender 场景。
+
+### 安装 Atta
+
+```text
+blender_rt_cad(op="setup")
+```
+
+会创建 `.opencode/atta-venv` 并从 `git+https://github.com/laszapens/Atta.git` 安装。可用 `source` 指定其他源，或把 `attaPython` 指向一个已经能 `import atta` 的 Python。手动安装：
+
+```bash
+python -m venv .opencode/atta-venv
+.opencode/atta-venv/bin/python -m pip install "git+https://github.com/laszapens/Atta.git"
+# Windows: .opencode\atta-venv\Scripts\python.exe
+```
+
+需要 Python 3.10+ 及 `numpy`、`scipy`、`trimesh`、`manifold3d`、`pillow`（自动安装）。STEP 导出额外需要 `brep` extra（`build123d`）。
+
+### 工作流
+
+```text
+blender_rt_cad(op="doctor")
+blender_rt_cad(op="catalog", args={verbose:true})
+blender_rt_cad(op="model", args={recipe:"part.bracket",
+  params:{length:120, width:70, thickness:8, hole_radius:6}})
+blender_rt_cad(op="describe", args={wall:true, perceive:true})
+blender_rt_cad(op="verify", args={constraints:{bbox:{x:[110,130]}, min_wall_mm:2.5}})
+blender_rt_cad(op="preview", args={views:["hero"], res:1200})
+blender_rt_cad(op="deliver", args={formats:["glb","step"]})
+blender_rt_cad(op="import", args={name:"bracket-01"})
+```
+
+`import` 会先 `deliver` GLB，再导入当前 Blender GUI 并返回一帧。`setup`、`status`、`import` 是插件新增的 op；其余 op 一一对应 Atta 的十个工具（`doctor`、`catalog`、`spec`、`model`、`variant`、`describe`、`verify`、`preview`、`deliver`、`run`）。
+
+---
+
+## 4. 配置
 
 | 选项 | 默认 | 说明 |
 | --- | --- | --- |
@@ -133,22 +178,29 @@ blender_rt_plan(op="export.scene", args={filepath:"out/body.glb"})
 | `blenderPath` | 自动检测 | Blender 可执行文件；也可用 `OCBB_BLENDER` / `BLENDER_PATH` |
 | `frameMaxSize` | `720` | `see` 默认最长边像素 |
 | `workerTtlMs` | `900000` | 无头会话空闲回收时间 |
+| `attaPython` | 自动检测 | 能 `import atta` 的 Python；也可用 `ATTA_PYTHON` |
+| `attaRoot` | — | 可选 Atta 源码目录；也可用 `ATTA_ROOT` |
+| `attaHome` | `.opencode/atta` | Atta 工作区；也可用 `ATTA_HOME` |
+| `attaRepo` | GitHub Atta | `op=setup` 使用的 pip 源 |
 
-环境变量：`OCBB_PORT`、`OCBB_BLENDER`、`OCBB_WORKER_TTL_MS`。
+环境变量：`OCBB_PORT`、`OCBB_BLENDER`、`OCBB_WORKER_TTL_MS`、`ATTA_PYTHON`、`ATTA_ROOT`、`ATTA_HOME`。
 
 ---
 
-## 4. 架构
+## 5. 架构
 
 ```text
 OpenCode server
   └─ plugin (TypeScript, @opencode/plugin)
-       ├─ 15 tools
+       ├─ 16 tools
        ├─ BridgeClient ── TCP 127.0.0.1:9876 ── Blender add-on (Python)
        │                                          └─ main-thread command queue
        ├─ WorkerManager ── blender -b worker.py ── same command surface
+       ├─ AttaBridge ── python -m atta tool ── Atta CAD kernel
+       │                                   └─ resident Blender worker (preview/deliver)
        ├─ JobManager / headless runner
        └─ .opencode/blender/{runs,jobs,presets.json,txn}
+          .opencode/atta/{_atta,...}
 ```
 
 - 扁平 JSON 协议：请求 `{"type": "...", "params": {...}}`，响应 `{"status":"success","result":...}` 或 `{"status":"error","message":...}`。
@@ -158,16 +210,17 @@ OpenCode server
 
 ---
 
-## 5. 安全
+## 6. 安全
 
 - 桥只绑定 `127.0.0.1`，没有鉴权；本机上任何进程都能连接。不要把它暴露到公网。
 - `blender_rt_do` / `execute_code` 等价于在 Blender 里执行任意 Python，权限就是你的用户权限。
 - 在 Blender 的 N 面板里勾选 **Pause AI** 会拒绝所有写命令，只读查询仍然可用。
 - 快照只写 `.opencode/blender/txn`，不会覆盖你已保存的 `.blend`，除非显式调用 `file.save`。
+- Atta 以本机子进程运行，权限就是你的用户权限，工作区在 `.opencode/atta`。spec 和模型来自模型输出，请像对待代码一样审查第三方 spec。
 
 ---
 
-## 6. 开发
+## 7. 开发
 
 ```bash
 npm install
@@ -185,6 +238,9 @@ python tests/smoke.py 51234
 
 # 插件工具层冒烟测试（需要上面 worker 在 51234，或 GUI 桥）
 node tests/plugin-smoke.mjs
+
+# Atta CAD 集成测试（需要先 blender_rt_cad op=setup）
+node tests/cad-smoke.mjs
 ```
 
 文件结构：
@@ -196,17 +252,19 @@ assets/launch.py                        启动 GUI 并加载插件
 assets/headless_wrapper.py              一次性 blender -b 包装器
 src/                                    OpenCode 插件
 skills/blender-modeling/SKILL.md        随插件加载的建模 skill
+skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 ```
 
 ---
 
-## 7. 许可与致谢
+## 8. 许可与致谢
 
 本项目以 **Apache License 2.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
 
 思路与部分实现参考：
 
 - [sixtysevenlf/dsh-blender-plugin](https://github.com/sixtysevenlf/dsh-blender-plugin)（BSD-3-Clause）— GUI 优先 + 无头降级的工作流、15 个工具面和扁平协议形态；
-- [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp)（MIT）— Blender 侧 socket 命令模式与离屏视口截图思路。
+- [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp)（MIT）— Blender 侧 socket 命令模式与离屏视口截图思路；
+- [laszapens/Atta](https://github.com/laszapens/Atta)（MIT）— 参数化 CAD 内核，作为可选的 `blender_rt_cad` 工具集成；Atta 需单独安装，仍遵循其自身许可。
 
 Blender 是 Blender Foundation 的商标，本项目与 Blender Foundation 无隶属关系。

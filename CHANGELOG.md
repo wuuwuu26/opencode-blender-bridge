@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0 — 2026-11-08
+
+- Fuse the Atta parametric CAD kernel (MIT, github.com/laszapens/Atta) as
+  `blender_rt_cad`: doctor, catalog, spec, model, variant, describe, verify,
+  preview, deliver, run, import, setup and status.
+- Spec-driven geometry with measured facts and the three-state
+  `pass` / `degraded` / `fail` verify gate; deliver is gated by verify.
+- `op=import` delivers a GLB and loads it into the live Blender GUI, then
+  returns a frame.
+- `op=setup` creates `.opencode/atta-venv` and installs Atta; `attaPython`,
+  `attaRoot` and `attaHome` options plus auto-detection.
+- Bundled `cad-modeling` skill and bilingual CAD documentation.
+- Add-on 1.0.2: automatic camera now fits small CAD parts (4.2× radius instead
+  of a 2 m minimum) with adaptive clip planes.
+
 ## 0.1.2 — 2026-11-08
 
 - Relicensed the project under the Apache License 2.0.

@@ -1,12 +1,13 @@
 # OpenCode × Blender Bridge
 
-Drive a real Blender session from OpenCode: look at the viewport, change one thing, look again — then batch, render, audit and export.
+Drive a real Blender session from OpenCode: look at the viewport, change one thing, look again — then batch, render, audit and export. Parametric CAD parts can come from **Atta**: measured facts, a three-state verify gate, and Blender-backed delivery.
 
 **English** | [简体中文](README.zh-CN.md)
 
 - **GUI first.** The agent works against the Blender session you are looking at and gets a frame after every change.
 - **Headless fallback.** No GUI? A persistent `blender -b` worker serves the same command surface, frames included.
-- **15 tools.** `see`, `do`, `watch`, `plan`, `worker`, `viewport`, `headless`, `job`, `loop`, `txn`, `preset`, `perf`, `opt`, `cmd`, `commands`.
+- **16 tools.** `see`, `do`, `watch`, `plan`, `worker`, `viewport`, `headless`, `job`, `loop`, `txn`, `preset`, `perf`, `opt`, `cmd`, `commands`, `cad`.
+- **Parametric CAD.** Atta specs and 23 recipes: facts before pixels, `pass`/`degraded`/`fail` verification, GLB/STEP delivery, import into the live scene.
 - **56 add-on commands.** Scene, objects, materials, cameras, lights, render, export, audit and performance.
 - **Local only.** The bridge listens on `127.0.0.1:9876` and never leaves the machine.
 
@@ -108,6 +109,7 @@ A returned frame means the fallback works.
 | `blender_rt_opt` | Report safe merge candidates (merging is explicit) |
 | `blender_rt_cmd` | Call any add-on command directly |
 | `blender_rt_commands` | List the add-on commands available right now |
+| `blender_rt_cad` | Parametric CAD via Atta: spec/model/describe/verify/preview/deliver/import/setup |
 
 ### Typical flow
 
@@ -125,7 +127,59 @@ Modeling goes through `blender_rt_plan`. Use `blender_rt_do` only for edits the 
 
 ---
 
-## 3. Configuration
+## 3. Parametric CAD with Atta
+
+The plugin fuses [Atta](https://github.com/laszapens/Atta) (MIT), an LLM-native
+parametric CAD kernel, as the `blender_rt_cad` tool. It is optional: the Blender
+tools work without it.
+
+- **The spec is the model.** Recipes or `atta.spec/v3` graphs rebuild deterministically.
+- **Facts before pixels.** `describe` returns bbox, volume, topology, wall thickness, rays and ASCII sections in well under a second.
+- **Three-state gate.** `verify` returns `pass` / `degraded` / `fail` with a receipt; `deliver` refuses anything not `pass` (or `degraded` with an explicit override).
+- **Blender-backed delivery.** `preview` renders with a resident Blender worker; `import` delivers a GLB and loads it into the live OpenCode Blender session.
+
+### Install Atta
+
+```text
+blender_rt_cad(op="setup")
+```
+
+This creates `.opencode/atta-venv` and installs Atta from
+`git+https://github.com/laszapens/Atta.git`. Override with `source` or set
+`attaPython` to an existing Python that can `import atta`. Manual install:
+
+```bash
+python -m venv .opencode/atta-venv
+.opencode/atta-venv/bin/python -m pip install "git+https://github.com/laszapens/Atta.git"
+# Windows: .opencode\atta-venv\Scripts\python.exe
+```
+
+Requires Python 3.10+ and `numpy`, `scipy`, `trimesh`, `manifold3d`, `pillow`
+(installed automatically). STEP export additionally needs the `brep` extra
+(`build123d`).
+
+### Workflow
+
+```text
+blender_rt_cad(op="doctor")
+blender_rt_cad(op="catalog", args={verbose:true})
+blender_rt_cad(op="model", args={recipe:"part.bracket",
+  params:{length:120, width:70, thickness:8, hole_radius:6}})
+blender_rt_cad(op="describe", args={wall:true, perceive:true})
+blender_rt_cad(op="verify", args={constraints:{bbox:{x:[110,130]}, min_wall_mm:2.5}})
+blender_rt_cad(op="preview", args={views:["hero"], res:1200})
+blender_rt_cad(op="deliver", args={formats:["glb","step"]})
+blender_rt_cad(op="import", args={name:"bracket-01"})
+```
+
+`import` runs `deliver` for GLB, imports the file into the connected Blender GUI
+and returns a frame. `setup`, `status` and `import` are plugin ops; the other ops
+map one-to-one to the ten Atta tools (`doctor`, `catalog`, `spec`, `model`,
+`variant`, `describe`, `verify`, `preview`, `deliver`, `run`).
+
+---
+
+## 4. Configuration
 
 | Option | Default | Description |
 | --- | --- | --- |
@@ -133,22 +187,30 @@ Modeling goes through `blender_rt_plan`. Use `blender_rt_do` only for edits the 
 | `blenderPath` | auto-detect | Blender executable; also `OCBB_BLENDER` / `BLENDER_PATH` |
 | `frameMaxSize` | `720` | Default longest edge for `see` |
 | `workerTtlMs` | `900000` | Idle timeout for headless sessions |
+| `attaPython` | auto-detect | Python that can `import atta`; also `ATTA_PYTHON` |
+| `attaRoot` | — | Optional Atta checkout root; also `ATTA_ROOT` |
+| `attaHome` | `.opencode/atta` | Atta workspace; also `ATTA_HOME` |
+| `attaRepo` | GitHub Atta | pip source used by `op=setup` |
 
-Environment variables: `OCBB_PORT`, `OCBB_BLENDER`, `OCBB_WORKER_TTL_MS`.
+Environment variables: `OCBB_PORT`, `OCBB_BLENDER`, `OCBB_WORKER_TTL_MS`,
+`ATTA_PYTHON`, `ATTA_ROOT`, `ATTA_HOME`.
 
 ---
 
-## 4. Architecture
+## 5. Architecture
 
 ```text
 OpenCode server
   └─ plugin (TypeScript, @opencode/plugin)
-       ├─ 15 tools
+       ├─ 16 tools
        ├─ BridgeClient ── TCP 127.0.0.1:9876 ── Blender add-on (Python)
        │                                          └─ main-thread command queue
        ├─ WorkerManager ── blender -b worker.py ── same command surface
+       ├─ AttaBridge ── python -m atta tool ── Atta CAD kernel
+       │                                   └─ resident Blender worker (preview/deliver)
        ├─ JobManager / headless runner
        └─ .opencode/blender/{runs,jobs,presets.json,txn}
+          .opencode/atta/{_atta,...}
 ```
 
 - Flat JSON protocol: request `{"type": "...", "params": {...}}`, response `{"status":"success","result":...}` or `{"status":"error","message":...}`.
@@ -158,16 +220,17 @@ OpenCode server
 
 ---
 
-## 5. Security
+## 6. Security
 
 - The bridge binds to `127.0.0.1` only and has no authentication. Any local process can connect; never expose it to the internet.
 - `blender_rt_do` / `execute_code` run arbitrary Python with your user permissions.
 - **Pause AI** in the Blender N panel rejects all write commands while keeping read-only queries available.
 - Snapshots write under `.opencode/blender/txn`; they never overwrite a saved `.blend` unless you explicitly call `file.save`.
+- Atta runs as a local subprocess with your user permissions and writes its workspace under `.opencode/atta`. Specs and models come from the model, so treat third-party specs like code.
 
 ---
 
-## 6. Development
+## 7. Development
 
 ```bash
 npm install
@@ -185,6 +248,9 @@ python tests/smoke.py 51234
 
 # plugin tool layer against the worker/GUI bridge
 node tests/plugin-smoke.mjs
+
+# Atta CAD integration (needs blender_rt_cad op=setup)
+node tests/cad-smoke.mjs
 ```
 
 Layout:
@@ -196,17 +262,19 @@ assets/launch.py                        launch the GUI with the add-on loaded
 assets/headless_wrapper.py              one-shot blender -b wrapper
 src/                                    OpenCode plugin
 skills/blender-modeling/SKILL.md        bundled modeling skill
+skills/cad-modeling/SKILL.md            Atta parametric CAD skill
 ```
 
 ---
 
-## 7. License and credits
+## 8. License and credits
 
 Licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 Inspired by and in a few small places adapted from:
 
 - [sixtysevenlf/dsh-blender-plugin](https://github.com/sixtysevenlf/dsh-blender-plugin) (BSD-3-Clause) — GUI-first + headless-fallback workflow, 15-tool surface and flat protocol shape;
-- [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp) (MIT) — Blender socket command pattern and offscreen viewport capture.
+- [ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp) (MIT) — Blender socket command pattern and offscreen viewport capture;
+- [laszapens/Atta](https://github.com/laszapens/Atta) (MIT) — parametric CAD kernel, integrated as the optional `blender_rt_cad` tool; Atta itself is installed separately and remains under its own license.
 
 Blender is a trademark of the Blender Foundation. This project is not affiliated with or endorsed by the Blender Foundation.

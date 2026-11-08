@@ -9,20 +9,14 @@ import { str } from "./util.js"
 
 const SKILL_ID = "blender-modeling"
 const SKILL_FILE = path.join(skillsDir, "blender-modeling", "SKILL.md")
+const CAD_SKILL_ID = "cad-modeling"
+const CAD_SKILL_FILE = path.join(skillsDir, "cad-modeling", "SKILL.md")
 
-function skillContent(): string {
+function skillContent(file: string, fallback: string): string {
   try {
-    return fs.readFileSync(SKILL_FILE, "utf8")
+    return fs.readFileSync(file, "utf8")
   } catch {
-    return [
-      "# Blender modeling with OpenCode",
-      "",
-      "1. Run `blender_viewport` with op=doctor; it must return kind=ok (or start a headless worker).",
-      "2. Read `blender_rt_plan` op=catalog before inventing operations.",
-      "3. Look with `blender_rt_see`, change one thing, look again.",
-      "4. Snapshot with `blender_rt_txn` before risky edits.",
-      "5. Export with `blender_rt_plan` op=export.scene and check the file.",
-    ].join("\n")
+    return fallback
   }
 }
 
@@ -46,6 +40,12 @@ async function blenderStatusLine(dir: string, options: unknown): Promise<string>
   }
   const sessions = host.workers.list()
   lines.push(`headless sessions: ${sessions.length ? sessions.map((session) => String(session.name)).join(", ") : "none"}`)
+  const atta = host.atta.status()
+  lines.push(
+    atta.available
+      ? `atta: ${atta.version} (${atta.python})`
+      : "atta: not installed (blender_rt_cad op=setup)",
+  )
   return lines.join("\n")
 }
 
@@ -70,7 +70,38 @@ export default Plugin.define({
             "Drive a real Blender session: inspect the scene, model step by step with frames, audit, snapshot, render and export.",
           autoinvoke: true,
           path: Skill.Info.fields.path.make(SKILL_FILE),
-          content: skillContent(),
+          content: skillContent(
+            SKILL_FILE,
+            [
+              "# Blender modeling with OpenCode",
+              "",
+              "1. Run `blender_viewport` with op=doctor; it must return kind=ok (or start a headless worker).",
+              "2. Read `blender_rt_plan` op=catalog before inventing operations.",
+              "3. Look with `blender_rt_see`, change one thing, look again.",
+              "4. Snapshot with `blender_rt_txn` before risky edits.",
+              "5. Export with `blender_rt_plan` op=export.scene and check the file.",
+            ].join("\n"),
+          ),
+        })
+        editor.add({
+          id: Skill.ID.make(CAD_SKILL_ID),
+          name: Skill.Name.make("Parametric CAD (Atta)"),
+          description:
+            "Spec-driven parametric CAD with measured facts and a three-state verify gate, delivered to Blender as GLB/STEP/mesh.",
+          autoinvoke: true,
+          path: Skill.Info.fields.path.make(CAD_SKILL_FILE),
+          content: skillContent(
+            CAD_SKILL_FILE,
+            [
+              "# Parametric CAD with Atta",
+              "",
+              "1. `blender_rt_cad(op=\"doctor\")`; install with op=setup if missing.",
+              "2. `blender_rt_cad(op=\"catalog\")` before inventing a spec.",
+              "3. Build with op=model, then read facts with op=describe.",
+              "4. Gate with op=verify; only pass/degraded may be delivered.",
+              "5. Preview for judgement, then deliver or import into the live Blender scene.",
+            ].join("\n"),
+          ),
         })
       })
     } catch {

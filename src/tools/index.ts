@@ -12,6 +12,7 @@ import { txnTool } from "./txn.js"
 import { presetTool } from "./preset.js"
 import { perfTool, optTool } from "./perf.js"
 import { cmdTool, commandsTool } from "./cmd.js"
+import { cadTool } from "./cad.js"
 
 export function buildTools(host: Host) {
   return [
@@ -30,5 +31,6 @@ export function buildTools(host: Host) {
     optTool(host),
     cmdTool(host),
     commandsTool(host),
+    cadTool(host),
   ]
 }

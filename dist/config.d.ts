@@ -4,9 +4,13 @@ export interface BridgeConfig {
     blenderPath?: string;
     frameMaxSize: number;
     workerTtlMs: number;
+    attaPython?: string;
+    attaRoot?: string;
+    attaHome?: string;
+    attaRepo: string;
 }
 export declare const PLUGIN_ID = "opencode.blender-bridge";
-export declare const PLUGIN_VERSION = "0.1.2";
+export declare const PLUGIN_VERSION = "0.2.0";
 export declare const DEFAULT_PORT = 9876;
 export declare const ADDON_PROTOCOL_VERSION = 1;
 export declare function resolveConfig(options: unknown): BridgeConfig;

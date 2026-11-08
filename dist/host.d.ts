@@ -3,11 +3,13 @@ import { type BlenderProbe } from "./blender.js";
 import { type BridgeConfig } from "./config.js";
 import { JobManager } from "./jobs.js";
 import { WorkerManager } from "./worker.js";
+import { AttaBridge } from "./atta.js";
 export interface Host {
     config: BridgeConfig;
     bridge: BridgeClient;
     workers: WorkerManager;
     jobs: JobManager;
+    atta: AttaBridge;
     projectDir: string;
     dataDir: string;
     framesDir: string;

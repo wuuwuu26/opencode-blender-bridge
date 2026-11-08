@@ -12,7 +12,7 @@ Protocol: newline-less flat JSON.
 bl_info = {
     "name": "OpenCode Blender Bridge",
     "author": "OpenCode Blender Bridge contributors",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > OpenCode",
     "description": "Local bridge that lets an OpenCode agent drive Blender",

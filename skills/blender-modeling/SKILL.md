@@ -9,6 +9,12 @@ You are working in a real Blender session (GUI, or a persistent headless worker)
 small steps: **look → change one thing → look again**. Never claim a visual result you did
 not see.
 
+For functional, dimensioned or manufacturable parts, use the `cad-modeling` skill
+(Atta) instead: spec → facts → verify → deliver.
+
+To clear a scratch scene, remove objects with `execute_code`; avoid
+`bpy.ops.wm.read_factory_settings`, which can unload the add-on and drop the bridge.
+
 ## 1. Connect before modeling
 
 1. `blender_viewport(op="doctor")`.
