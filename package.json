@@ -1,0 +1,61 @@
+{
+  "name": "opencode-blender-bridge",
+  "version": "0.1.0",
+  "description": "Drive a real Blender session from OpenCode: see frames, run Python, plan, render, export and keep long jobs off the UI thread.",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "assets",
+    "skills",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "blender",
+    "3d",
+    "bpy",
+    "ai-agent"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "package:addon": "node scripts/package-addon.mjs",
+    "test:plugin": "node tests/plugin-smoke.mjs",
+    "test:addon": "python tests/smoke.py",
+    "prepublishOnly": "npm run build && npm run package:addon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wuuwuu26/opencode-blender-bridge.git"
+  },
+  "homepage": "https://github.com/wuuwuu26/opencode-blender-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/wuuwuu26/opencode-blender-bridge/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@opencode/plugin": "^2.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}

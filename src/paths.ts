@@ -1,0 +1,12 @@
+import fs from "node:fs"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+
+export const packageRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
+export const assetsDir = path.join(packageRoot, "assets")
+export const addonRoot = path.join(assetsDir, "addon")
+export const addonPackageDir = path.join(addonRoot, "opencode_blender_bridge")
+export const workerScript = path.join(assetsDir, "worker.py")
+export const launchScript = path.join(assetsDir, "launch.py")
+export const headlessWrapper = path.join(assetsDir, "headless_wrapper.py")
+export const skillsDir = path.join(packageRoot, "skills")

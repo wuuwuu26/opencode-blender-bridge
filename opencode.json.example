@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": [
+    {
+      "package": "./opencode-blender-bridge",
+      "options": {
+        "port": 9876,
+        "frameMaxSize": 720,
+        "workerTtlMs": 900000
+      }
+    }
+  ]
+}

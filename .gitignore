@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+*.pyc
+*.log
+.opencode/
+tests/*.png
+tests/*.glb
+tests/*.blend
+tests/worker.*.log
+tests/gui.*.log
+.DS_Store
