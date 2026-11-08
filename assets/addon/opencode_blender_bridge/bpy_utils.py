@@ -55,7 +55,11 @@ def world_bbox(obj):
 
 
 def scene_bbox(objects=None):
-    objs = [o for o in (objects if objects is not None else bpy.context.scene.objects) if o.type in {"MESH", "CURVE", "SURFACE", "META", "FONT"}]
+    objs = [
+        o
+        for o in (objects if objects is not None else bpy.context.scene.objects)
+        if o.type in {"MESH", "CURVE", "SURFACE", "META", "FONT"} and not o.name.startswith("Studio_")
+    ]
     if not objs:
         return Vector((0, 0, 0)), Vector((0, 0, 0)), 0.0
     los, his = [], []

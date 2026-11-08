@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1 — 2026-11-08
+
+- Fix `render_view` returning an error when `from`/`look_at` are passed as
+  strings (`U.vec` was called on the raw string after rendering).
+- `launch.py` now uses the add-on installed in Blender preferences and only
+  falls back to the bundled copy when nothing is installed, so the two copies
+  cannot register over each other.
+- Scene bbox ignores studio helpers named `Studio_*`, so automatic cameras
+  frame the model instead of the whole floor.
+- Add-on version 1.0.1.
+
 ## 0.1.0 — 2026-11-08
 
 First public release.

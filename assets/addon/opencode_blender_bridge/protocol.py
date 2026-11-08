@@ -3,7 +3,7 @@
 import bpy
 
 ADDON_NAME = "OpenCode Blender Bridge"
-ADDON_VERSION = (1, 0, 0)
+ADDON_VERSION = (1, 0, 1)
 ADDON_PROTOCOL_VERSION = 1
 
 DEFAULT_PORT = 9876

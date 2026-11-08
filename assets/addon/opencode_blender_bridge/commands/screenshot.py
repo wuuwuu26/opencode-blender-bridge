@@ -251,8 +251,8 @@ class ScreenshotCommands:
                 "height": render.resolution_y,
                 "engine": render.engine,
                 "method": method,
-                "from": U.vec(from_location) if from_location else None,
-                "look_at": U.vec(look_at) if look_at else None,
+                "from": U.vec(U.parse_vec(from_location)) if from_location else None,
+                "look_at": U.vec(U.parse_vec(look_at)) if look_at else None,
                 "ms": round((time.time() - started) * 1000),
             }
         finally:
