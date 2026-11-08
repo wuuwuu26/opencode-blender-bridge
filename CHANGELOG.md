@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 — 2026-11-08
+
+- Relicensed the project under the Apache License 2.0.
+- README is now bilingual: `README.md` (English, default) and
+  `README.zh-CN.md` (简体中文).
+- The add-on zip now bundles `LICENSE` and `NOTICE` so binary distributions
+  carry the license and third-party attributions.
+
 ## 0.1.1 — 2026-11-08
 
 - Fix `render_view` returning an error when `from`/`look_at` are passed as

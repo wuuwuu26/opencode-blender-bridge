@@ -1,9 +1,9 @@
 {
   "name": "opencode-blender-bridge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Drive a real Blender session from OpenCode: see frames, run Python, plan, render, export and keep long jobs off the UI thread.",
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -21,6 +21,7 @@
     "assets",
     "skills",
     "README.md",
+    "README.zh-CN.md",
     "LICENSE",
     "NOTICE"
   ],

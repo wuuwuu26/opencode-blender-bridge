@@ -1,6 +1,6 @@
 import { asRecord, num, str } from "./util.js";
 export const PLUGIN_ID = "opencode.blender-bridge";
-export const PLUGIN_VERSION = "0.1.1";
+export const PLUGIN_VERSION = "0.1.2";
 export const DEFAULT_PORT = 9876;
 export const ADDON_PROTOCOL_VERSION = 1;
 export function resolveConfig(options) {
