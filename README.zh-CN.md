@@ -127,7 +127,35 @@ blender_rt_plan(op="export.scene", args={filepath:"out/body.glb"})
 
 ---
 
-## 3. 参数化 CAD（Atta）
+## 3. 和常见 Blender MCP 的区别
+
+两者都是「让 agent 直接操作真实 Blender 会话」。常见的 Blender MCP —— 以 [`ahujasid/blender-mcp`](https://github.com/ahujasid/blender-mcp) 为代表 —— 在前面放一个插件和 socket，提供场景 / 对象查询、视口截图和 `execute_blender_code`，通常再挂资产库集成（Poly Haven、Sketchfab、Hyper3D Rodin）。这已经足够让模型改一个场景。
+
+本项目保留同样的 GUI 优先思路，但在「改」的外面加了一层：
+
+| | 常见 Blender MCP | 本项目 |
+| --- | --- | --- |
+| 接入方式 | 独立 MCP server + stdio，供任意 MCP 客户端使用 | OpenCode 插件：16 个原生工具 + skill，没有额外 server 进程 |
+| 编辑面 | 主要是 `execute_blender_code` | `plan` 能力目录 + 校验过的标准操作；`do` 是显式逃生口 |
+| 会话模型 | 一台已连接的 Blender | GUI 会话、常驻 `blender -b` worker、一次性 headless、后台 job、参数搜索 loop |
+| 撤销 | 无 | `txn`：`.blend` 文件与对象变换快照，可回滚 |
+| 确认改动 | 人看截图 | `see` 对帧做哈希去重、跳过相同画面；`watch` 采样时间窗并判断画面是否真的变了 |
+| 批量与性能 | 基本没有 | `preset`、`perf` 档位、`opt` 合并候选、批渲染与批导出 |
+| CAD | 多为资产库 | Atta 参数化 CAD：spec 即模型、`describe` 实测事实、`verify` 三态、GLB/STEP `deliver` |
+| 产物形态 | 会话里的操作结果 | 工作区文件 + `report.txt` / `PROVENANCE.txt` / `progress.json`，可复现、可审计 |
+
+- **plan 而不是随手写 Python。** `blender_rt_plan` 按能力目录校验参数，同类操作每次形态一致、可以脚本化；目录覆盖不到的部分仍然可以用 `blender_rt_do`。
+- **GUI 和无头共用一套命令面。** 常驻 `blender -b` worker 处理同样的请求、照样回帧；`job` 把长任务放后台，`loop` 在一个 worker 里扫参数并按指标排序。只有 socket 的 MCP 通常止步于已打开的 GUI。
+- **可回滚、可校验。** 风险操作前用 `txn` 存快照或记录对象变换；`see` 避免在没变化的画面上浪费视觉 token；CAD 侧返回 `pass` / `degraded` / `fail` 和回执，`deliver` 拒绝未通过的结果。
+- **交付物是文件。** 本 README 末尾的机器人装配案例全程走无头构建，并写出带实测数字的 `report.txt`——`worker` / `job` / `txn` / `verify` 就是为这类工作流存在的。
+
+**它不打算做的事。** 只在本地运行（`127.0.0.1`、无鉴权、有 *Pause AI* 开关），不提供资产市场集成，也不隐藏 Blender 的 API：网格和规格来自模型或上游仓库，所以下面的许可与来源说明比一个「下载按钮」更重要。
+
+粗略的取舍：只想「把这个物体挪一下给我看看」，普通 Blender MCP 更省事；要做可复现的批量资产、带校验的交付、或无人值守的长任务，`plan` + worker + job + txn + verify 这一层才是重点。
+
+---
+
+## 4. 参数化 CAD（Atta）
 
 插件把 [Atta](https://github.com/laszapens/Atta)（MIT，LLM 原生的参数化 CAD 内核）融合为 `blender_rt_cad` 工具。它是可选项，不装也不影响 Blender 工具。
 
@@ -170,7 +198,7 @@ blender_rt_cad(op="import", args={name:"bracket-01"})
 
 ---
 
-## 4. 配置
+## 5. 配置
 
 | 选项 | 默认 | 说明 |
 | --- | --- | --- |
@@ -187,7 +215,7 @@ blender_rt_cad(op="import", args={name:"bracket-01"})
 
 ---
 
-## 5. 架构
+## 6. 架构
 
 ```text
 OpenCode server
@@ -210,7 +238,7 @@ OpenCode server
 
 ---
 
-## 6. 安全
+## 7. 安全
 
 - 桥只绑定 `127.0.0.1`，没有鉴权；本机上任何进程都能连接。不要把它暴露到公网。
 - `blender_rt_do` / `execute_code` 等价于在 Blender 里执行任意 Python，权限就是你的用户权限。
@@ -220,7 +248,7 @@ OpenCode server
 
 ---
 
-## 7. 开发
+## 8. 开发
 
 ```bash
 npm install
@@ -257,7 +285,7 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 
 ---
 
-## 8. 应用案例：机器人网格装配与动画生成
+## 9. 应用案例：机器人网格装配与动画生成
 
 本桥接插件的一个实际应用案例：把开源机器人描述文件（URDF / xacro / SDF）及其官方网格，装配成带层级骨架、材质和循环动画的 Blender 场景，并批量输出三视图、视频与数值验证报告。同一套通用正向运动学（FK）管线已复用于四足机器狗、人形机器人、6 轴机械臂和四旋翼无人机四种形态。方法、用途、实测结果与复现步骤见 [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md)。
 
@@ -284,7 +312,7 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
   </tr>
 </table>
 
-## 9. 许可与致谢
+## 10. 许可与致谢
 
 本项目以 **Apache License 2.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
 

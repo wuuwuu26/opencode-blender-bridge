@@ -127,7 +127,35 @@ Modeling goes through `blender_rt_plan`. Use `blender_rt_do` only for edits the 
 
 ---
 
-## 3. Parametric CAD with Atta
+## 3. Compared with a typical Blender MCP server
+
+Both drive a real Blender session from an agent. A typical Blender MCP server — [`ahujasid/blender-mcp`](https://github.com/ahujasid/blender-mcp) is the common example — puts a small add-on and a socket in front of Blender, exposes scene/object queries, a viewport screenshot and `execute_blender_code`, and often adds asset-library integrations (Poly Haven, Sketchfab, Hyper3D Rodin). That is enough to let a model change a scene.
+
+This plugin keeps the same GUI-first idea and adds the layer around the edit:
+
+| | Typical Blender MCP | This bridge |
+| --- | --- | --- |
+| Integration | A standalone MCP server over stdio, used by any MCP client | An OpenCode plugin: 16 native tools plus a skill, no extra server process |
+| Edit surface | Mostly `execute_blender_code` | A `plan` catalog of validated operations; `do` is the explicit escape hatch |
+| Sessions | One connected Blender | GUI session, persistent `blender -b` worker, one-shot headless, background jobs, parameter loops |
+| Undo | None | `txn` snapshots of `.blend` files and object transforms, with rollback |
+| Confirming a change | You look at a screenshot | `see` hashes frames and skips identical ones; `watch` samples a window and reports whether the image changed |
+| Batch and performance | Little | `preset`, `perf` profiles, `opt` merge candidates, batch render and export |
+| CAD | Usually asset libraries | Atta parametric CAD: spec-as-model, measured `describe`, three-state `verify`, GLB/STEP `deliver` |
+| Output | Actions inside the session | Files in the workspace with `report.txt` / `PROVENANCE.txt` / `progress.json` — reproducible and auditable |
+
+- **Plan instead of ad-hoc Python.** `blender_rt_plan` validates arguments against a capability catalog, so repeated work looks the same each time and can be scripted; `blender_rt_do` stays available for anything the catalog does not cover.
+- **GUI and headless are one command surface.** A persistent `blender -b` worker serves the same requests, frames included; `job` moves long work to the background and `loop` sweeps parameters in one worker, ranked by a metric. A socket-only MCP normally stops at the open GUI.
+- **Rollback and verification.** `txn` snapshots the file or records object transforms before a risky step, `see` avoids spending vision tokens on unchanged frames, and the CAD side returns `pass` / `degraded` / `fail` with a receipt — `deliver` refuses a result that did not pass.
+- **Deliverables are files.** The robot assembly example at the end of this README runs entirely through headless builds and writes `report.txt` with measured numbers; that workflow is what `worker` / `job` / `txn` / `verify` exist for.
+
+**What it does not try to be.** It is local only (`127.0.0.1`, no authentication, with a *Pause AI* switch), it has no asset-marketplace integration, and it does not hide Blender's API: meshes and specs come from the model or from upstream repositories, so the licensing and provenance notes below matter more than they would for a download button.
+
+Rough rule: for a one-off "move this object and show me", a typical Blender MCP is the shorter path. For repeatable asset production, verified delivery, or long unattended runs, the `plan` + worker + job + txn + verify layer is the point.
+
+---
+
+## 4. Parametric CAD with Atta
 
 The plugin fuses [Atta](https://github.com/laszapens/Atta) (MIT), an LLM-native
 parametric CAD kernel, as the `blender_rt_cad` tool. It is optional: the Blender
@@ -179,7 +207,7 @@ map one-to-one to the ten Atta tools (`doctor`, `catalog`, `spec`, `model`,
 
 ---
 
-## 4. Configuration
+## 5. Configuration
 
 | Option | Default | Description |
 | --- | --- | --- |
@@ -197,7 +225,7 @@ Environment variables: `OCBB_PORT`, `OCBB_BLENDER`, `OCBB_WORKER_TTL_MS`,
 
 ---
 
-## 5. Architecture
+## 6. Architecture
 
 ```text
 OpenCode server
@@ -220,7 +248,7 @@ OpenCode server
 
 ---
 
-## 6. Security
+## 7. Security
 
 - The bridge binds to `127.0.0.1` only and has no authentication. Any local process can connect; never expose it to the internet.
 - `blender_rt_do` / `execute_code` run arbitrary Python with your user permissions.
@@ -230,7 +258,7 @@ OpenCode server
 
 ---
 
-## 7. Development
+## 8. Development
 
 ```bash
 npm install
@@ -267,7 +295,7 @@ skills/cad-modeling/SKILL.md            Atta parametric CAD skill
 
 ---
 
-## 8. Example: robot mesh assembly and animation
+## 9. Example: robot mesh assembly and animation
 
 A worked application example of this bridge: turn open-source robot descriptions (URDF / xacro / SDF) and their official meshes into Blender scenes with a link/joint hierarchy, materials and looped animations, then batch-render stills, MP4/GIF and verification reports. One generic forward-kinematics pipeline was reused across a quadruped, a humanoid, a 6-DOF arm and a quadcopter — see [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md) for the method, use cases, measured results and reproduction steps.
 
@@ -294,7 +322,7 @@ A worked application example of this bridge: turn open-source robot descriptions
   </tr>
 </table>
 
-## 9. License and credits
+## 10. License and credits
 
 Licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
