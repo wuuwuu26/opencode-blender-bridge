@@ -271,6 +271,37 @@ skills/cad-modeling/SKILL.md            Atta parametric CAD skill
 
 A worked application example of this bridge: turn open-source robot descriptions (URDF / xacro / SDF) and their official meshes into Blender scenes with a link/joint hierarchy, materials and looped animations, then batch-render stills, MP4/GIF and verification reports. One generic forward-kinematics pipeline was reused across a quadruped, a humanoid, a 6-DOF arm, a quadcopter and a 1:10 RC car — see [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md) for the method, use cases, measured results and reproduction steps.
 
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/media/go2.gif" width="340" alt="Unitree Go2 quadruped trot"><br>
+      <sub><b>Quadruped</b> — 48-frame trot, URDF FK, 12 DOF</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/media/g1.gif" width="340" alt="Unitree G1 humanoid idle and wave"><br>
+      <sub><b>Humanoid</b> — 96-frame idle + wave, 39 links / 29 DOF</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/media/z1.gif" width="340" alt="Unitree Z1 arm pick and place"><br>
+      <sub><b>6-DOF arm</b> — 96-frame pick, carry and place (IK)</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/media/drone.gif" width="340" alt="PX4 Iris quadcopter hover"><br>
+      <sub><b>Quadcopter</b> — 48-frame prop spin and hover loop</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/media/rc_car.gif" width="340" alt="F1TENTH RC car driving"><br>
+      <sub><b>1:10 RC car</b> — 96-frame drive, wheel spin + Ackermann steering + suspension bob</sub>
+    </td>
+  </tr>
+</table>
+
+The GIFs are previews generated from the rendered MP4s by [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1); meshes, `.blend` files and videos stay in the local workspace with their own license files.
+
 ## 9. License and credits
 
 Licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

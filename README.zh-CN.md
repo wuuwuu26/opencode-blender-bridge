@@ -261,6 +261,37 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 
 本桥接插件的一个实际应用案例：把开源机器人描述文件（URDF / xacro / SDF）及其官方网格，装配成带层级骨架、材质和循环动画的 Blender 场景，并批量输出三视图、视频与数值验证报告。同一套通用正向运动学（FK）管线已复用于四足机器狗、人形机器人、6 轴机械臂、四旋翼无人机和 1:10 RC 赛车五种形态。方法、用途、实测结果与复现步骤见 [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md)。
 
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/media/go2.gif" width="340" alt="Unitree Go2 四足小跑步态"><br>
+      <sub><b>四足 Go2</b> — 48 帧 trot，URDF FK，12 DOF</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/media/g1.gif" width="340" alt="Unitree G1 人形 idle 与挥手"><br>
+      <sub><b>人形 G1</b> — 96 帧 idle + 挥手，39 link / 29 DOF</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/media/z1.gif" width="340" alt="Unitree Z1 机械臂抓取放置"><br>
+      <sub><b>6 轴机械臂 Z1</b> — 96 帧抓取-搬运-放置（IK）</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/media/drone.gif" width="340" alt="PX4 Iris 四旋翼悬停"><br>
+      <sub><b>四旋翼 Iris</b> — 48 帧桨转 + 悬停闭环</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="docs/media/rc_car.gif" width="340" alt="F1TENTH 1:10 RC 赛车驾驶"><br>
+      <sub><b>1:10 RC 赛车</b> — 96 帧驾驶，轮转 + Ackermann 转向 + 悬挂起伏</sub>
+    </td>
+  </tr>
+</table>
+
+GIF 是预渲染 MP4 经 [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1) 转出的轻量预览；网格、`.blend` 与视频保存在本地工作区，各自附带许可说明。
+
 ## 9. 许可与致谢
 
 本项目以 **Apache License 2.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。

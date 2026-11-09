@@ -49,6 +49,39 @@
 - **无头路径**（人形 / 机械臂 / 无人机 / 赛车）：`blender -b --factory-startup --python build_*.py` 直接批处理，或经桥接的 `headless` / `job` 工具跑长任务。
 - 桥接插件在此只负责「驱动 Blender + 取帧 + 批处理」；装配本身是标准 `bpy` 空物体层级 + `matrix_parent_inverse`，不依赖插件私有 API，脱离插件也能用 `blender -b` 复现。
 
+## 动画演示
+
+下面 5 段循环动画都是从各自的 `model.blend` 直接渲染、再用 ffmpeg 转成的轻量 GIF（GIF 由 [`scripts/make_readme_gifs.ps1`](../scripts/make_readme_gifs.ps1) 从源 MP4 生成）。
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="media/go2.gif" width="380" alt="Unitree Go2 quadruped trot"><br>
+      <sub><b>四足 Go2</b> — 48 帧 trot 步态（URDF FK，12 DOF）</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="media/g1.gif" width="380" alt="Unitree G1 humanoid idle and wave"><br>
+      <sub><b>人形 G1</b> — 96 帧 idle + 挥手（39 link / 29 DOF）</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="media/z1.gif" width="380" alt="Unitree Z1 arm pick and place"><br>
+      <sub><b>6 轴机械臂 Z1</b> — 96 帧抓取-搬运-放置（IK）</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="media/drone.gif" width="380" alt="PX4 Iris quadcopter hover"><br>
+      <sub><b>四旋翼 Iris</b> — 48 帧桨转 + 悬停闭环</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="media/rc_car.gif" width="380" alt="F1TENTH RC car driving"><br>
+      <sub><b>1:10 RC 赛车</b> — 96 帧驾驶（轮转 + Ackermann 转向 + 悬挂起伏）</sub>
+    </td>
+  </tr>
+</table>
+
 ## 成品与验证数字（实测）
 
 | 形态 | 来源 / 许可 | 装配 | 动画 | 验证 |
@@ -101,5 +134,6 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
 - **Limits**: kinematic presentation only (no dynamics/contact physics), simulation-grade meshes, and copyright licenses do not grant trademark or industrial-design rights.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
+- **Previews**: the five looped animations are shown above as lightweight GIFs in [`docs/media/`](media/), generated from the rendered MP4s by `scripts/make_readme_gifs.ps1`.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.
