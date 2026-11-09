@@ -292,15 +292,9 @@ A worked application example of this bridge: turn open-source robot descriptions
       <sub><b>Quadcopter</b> — 48-frame prop spin and hover loop</sub>
     </td>
   </tr>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="docs/media/rc_car.gif" width="340" alt="F1TENTH RC car driving"><br>
-      <sub><b>1:10 RC car</b> — 96-frame drive, wheel spin + Ackermann steering + suspension bob</sub>
-    </td>
-  </tr>
 </table>
 
-The GIFs are previews generated from the rendered MP4s by [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1); meshes, `.blend` files and videos stay in the local workspace with their own license files.
+The GIFs are previews generated from the rendered MP4s by [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1); meshes, `.blend` files and videos stay in the local workspace with their own license files. The 1:10 RC car is not shown here: the upstream body shell and tyres interpenetrate, so its preview stays local.
 
 ## 9. License and credits
 

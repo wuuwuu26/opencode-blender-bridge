@@ -282,15 +282,9 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
       <sub><b>四旋翼 Iris</b> — 48 帧桨转 + 悬停闭环</sub>
     </td>
   </tr>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="docs/media/rc_car.gif" width="340" alt="F1TENTH 1:10 RC 赛车驾驶"><br>
-      <sub><b>1:10 RC 赛车</b> — 96 帧驾驶，轮转 + Ackermann 转向 + 悬挂起伏</sub>
-    </td>
-  </tr>
 </table>
 
-GIF 是预渲染 MP4 经 [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1) 转出的轻量预览；网格、`.blend` 与视频保存在本地工作区，各自附带许可说明。
+GIF 是预渲染 MP4 经 [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1) 转出的轻量预览；网格、`.blend` 与视频保存在本地工作区，各自附带许可说明。1:10 RC 赛车不在本页展示（官方车壳与轮胎本身有互穿），仅保留在本地工作区。
 
 ## 9. 许可与致谢
 

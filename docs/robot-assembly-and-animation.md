@@ -51,7 +51,7 @@
 
 ## 动画演示
 
-下面 5 段循环动画都是从各自的 `model.blend` 直接渲染、再用 ffmpeg 转成的轻量 GIF（GIF 由 [`scripts/make_readme_gifs.ps1`](../scripts/make_readme_gifs.ps1) 从源 MP4 生成）。
+下面 4 段循环动画都是从各自的 `model.blend` 直接渲染、再用 ffmpeg 转成的轻量 GIF（GIF 由 [`scripts/make_readme_gifs.ps1`](../scripts/make_readme_gifs.ps1) 从源 MP4 生成）。
 
 <table>
   <tr>
@@ -74,13 +74,9 @@
       <sub><b>四旋翼 Iris</b> — 48 帧桨转 + 悬停闭环</sub>
     </td>
   </tr>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="media/rc_car.gif" width="380" alt="F1TENTH RC car driving"><br>
-      <sub><b>1:10 RC 赛车</b> — 96 帧驾驶（轮转 + Ackermann 转向 + 悬挂起伏）</sub>
-    </td>
-  </tr>
 </table>
+
+> 1:10 RC 赛车（F1TENTH）不在本页展示：它的车壳与轮胎在官方网格上就有轻微互穿（车壳把轮胎包在内侧），放大后能看到壳体边缘切进胎面，因此只保留在本地工作区，未随仓库分发预览。
 
 ## 成品与验证数字（实测）
 
@@ -134,6 +130,6 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
 - **Limits**: kinematic presentation only (no dynamics/contact physics), simulation-grade meshes, and copyright licenses do not grant trademark or industrial-design rights.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
-- **Previews**: the five looped animations are shown above as lightweight GIFs in [`docs/media/`](media/), generated from the rendered MP4s by `scripts/make_readme_gifs.ps1`.
+- **Previews**: the looped animations for the quadruped, humanoid, arm and quadcopter are shown above as lightweight GIFs in [`docs/media/`](media/), generated from the rendered MP4s by `scripts/make_readme_gifs.ps1`.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.
