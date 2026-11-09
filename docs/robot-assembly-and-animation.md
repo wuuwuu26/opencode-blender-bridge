@@ -93,7 +93,7 @@
 
 - **Go2 / Iris**：无异常。
 - **G1**：垂臂时手掌压进髋部。给两侧肩 roll 关节逐帧叠加 12° 外展后，手–髋、手–躯干、手–膝等对撞全部归零，脚底仍在 `z=0`。
-- **Z1**：47 mm 方块被夹爪上棱咬入。实测这副夹爪在抓取点只张开约 27 mm，且指间空腔中心偏离腕轴约 4 mm；把方块改为 22.5 mm、绕 Z 转到与夹爪同向、并移入空腔中心后，定子与方块 0 面相交。
+- **Z1**：47 mm 方块被夹爪上棱咬入。实测这副夹爪在抓取点只张开约 27 mm，且指间空腔中心偏离腕轴约 4 mm；把方块改为 22.5 mm、绕 Z 转到与夹爪同向、并移入空腔中心后，定子与方块 0 面相交。另外修正了桌面顶面高度（原先在 `z = −12.5 mm`，方块放下后会悬空 12.5 mm），现在放置后正好落在台面上。
 
 ## 复现骨架
 
@@ -132,7 +132,7 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **One pipeline, four morphologies**: quadruped, humanoid, 6-DOF arm and quadcopter — no per-robot hardcoding.
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
 - **Limits**: kinematic presentation only (no dynamics/contact physics), simulation-grade meshes, and copyright licenses do not grant trademark or industrial-design rights.
-- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests). Animations that pushed a hand into the hip (G1) or the jaw into the carried block (Z1) were fixed by a 12° shoulder abduction and by sizing/turning the block to the claw's real 27 mm opening respectively; Go2 and Iris were clean.
+- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests). Animations that pushed a hand into the hip (G1) or the jaw into the carried block (Z1) were fixed by a 12° shoulder abduction and by sizing/turning the block to the claw's real 27 mm opening respectively; the Z1 table top was also corrected to `z=0` so the released block rests on it; Go2 and Iris were clean.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.
