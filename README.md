@@ -149,8 +149,6 @@ This plugin keeps the same GUI-first idea and adds the layer around the edit:
 - **Rollback and verification.** `txn` snapshots the file or records object transforms before a risky step, `see` avoids spending vision tokens on unchanged frames, and the CAD side returns `pass` / `degraded` / `fail` with a receipt — `deliver` refuses a result that did not pass.
 - **Deliverables are files.** The robot assembly example at the end of this README runs entirely through headless builds and writes `report.txt` with measured numbers; that workflow is what `worker` / `job` / `txn` / `verify` exist for.
 
-**What it does not try to be.** A remote service (it binds `127.0.0.1`, has no authentication, and offers a *Pause AI* switch for writes), an asset marketplace, or a wall between you and Blender — `do` still runs plain `bpy`, and meshes and specs come from the model or from upstream repositories. Licence and provenance are therefore part of the workflow, not a download button.
-
 Rough rule: for a one-off "move this object and show me", a typical Blender MCP is the shorter path. For repeatable asset production, verified delivery, or long unattended runs, the `plan` + worker + job + txn + verify layer is the point.
 
 ---

@@ -149,8 +149,6 @@ blender_rt_plan(op="export.scene", args={filepath:"out/body.glb"})
 - **可回滚、可校验。** 风险操作前用 `txn` 存快照或记录对象变换；`see` 避免在没变化的画面上浪费视觉 token；CAD 侧返回 `pass` / `degraded` / `fail` 和回执，`deliver` 拒绝未通过的结果。
 - **交付物是文件。** 本 README 末尾的机器人装配案例全程走无头构建，并写出带实测数字的 `report.txt`——`worker` / `job` / `txn` / `verify` 就是为这类工作流存在的。
 
-**它不打算成为什么。** 不是远程服务（只绑定 `127.0.0.1`、无鉴权，并提供 *Pause AI* 阻断写入），不是资产市场，也不是挡在你和 Blender 之间的一堵墙——`do` 仍然直接执行 `bpy`，网格和规格来自模型或上游仓库。许可与来源因此是流程的一部分，而不是一个「下载按钮」。
-
 粗略的取舍：只想「把这个物体挪一下给我看看」，普通 Blender MCP 更省事；要做可复现的批量资产、带校验的交付、或无人值守的长任务，`plan` + worker + job + txn + verify 这一层才是重点。
 
 ---
