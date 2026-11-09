@@ -294,11 +294,11 @@ A worked application example of this bridge: turn open-source robot descriptions
   </tr>
 </table>
 
-The GIFs are previews generated from the rendered MP4s by [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1); meshes, `.blend` files and videos stay in the local workspace with their own license files. The 1:10 RC car is not shown here: the upstream body shell and tyres interpenetrate, so its preview stays local.
-
 ## 9. License and credits
 
 Licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+The robot meshes in the example are the official upstream assets, used under their own licenses: Unitree Go2, G1 and Z1 from [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros) (BSD-3-Clause), and PX4 Iris from [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models) (BSD-3-Clause). Robot names and logos belong to their respective owners; this example implies no endorsement.
 
 Inspired by and in a few small places adapted from:
 

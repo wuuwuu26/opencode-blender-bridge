@@ -51,7 +51,7 @@
 
 ## 动画演示
 
-下面 4 段循环动画都是从各自的 `model.blend` 直接渲染、再用 ffmpeg 转成的轻量 GIF（GIF 由 [`scripts/make_readme_gifs.ps1`](../scripts/make_readme_gifs.ps1) 从源 MP4 生成）。
+下面 4 段循环动画都是从各自的 `model.blend` 直接渲染、再用 ffmpeg 转成的轻量 GIF。
 
 <table>
   <tr>
@@ -83,12 +83,21 @@
 | 形态 | 来源 / 许可 | 装配 | 动画 | 验证 |
 | --- | --- | --- | --- | --- |
 | 四足 Go2 | `unitree_ros / go2_description`，BSD-3 | URDF FK，12 DOF，官方 DAE→OBJ | 48 帧 trot | FK 误差 1.49e-7；髋–大腿间隙 1.19 mm；四脚 z=0 |
-| 人形 G1 | `unitree_ros / g1_description`，BSD-3 | 39 link / 38 joint / 29 DOF | 96 帧 idle + 挥手 | FK 平移 2.78e-7 m；脚底漂移 0；L/R 对称 1e-5 m |
-| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK） | FK 0.000295 mm；7 个抓取位 IK 残差 0 |
-| 四旋翼 Iris | `PX4/PX4-SITL_gazebo-classic`，BSD-3 | 机身 STL 拆件 + 桨 DAE→OBJ | 48 帧桨转 + 悬停 | 电机对角 500 mm；桨毂轴对齐 |
+| 人形 G1 | `unitree_ros / g1_description`，BSD-3 | 39 link / 38 joint / 29 DOF | 96 帧 idle + 挥手 | FK 平移 2.78e-7 m；脚底漂移 0；L/R 对称 1e-5 m；手–髋 0 相交 |
+| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK） | FK 0.000295 mm；7 个抓取位 IK 残差 0；定子–方块 0 面相交 |
+| 四旋翼 Iris | `PX4/PX4-gazebo-models`，BSD-3 | 机身 STL 拆件 + 桨 DAE→OBJ | 48 帧桨转 + 悬停 | 电机对角 500 mm；桨毂轴对齐 |
 | 1:10 赛车 | `f1tenth-dev/simulator`，Apache-2.0 | 底盘 / 4 轮 / 2 转向铰链 / 雷达 | 96 帧驾驶 | 轴距 0.325 m；轮转 4.673 圈 / 1.47 m；后轮 pivot 修复 |
 
 每个成品目录通常含 `model.blend`、`animation.mp4`（+ 部分 `animation.gif`）、`hero.png` / `side.png` / `front.png`、`report.txt`、`PROVENANCE.txt`、许可文本、`progress.json`、`scripts/` 重建脚本、`renders/` 逐帧 PNG。
+
+### 穿模检查
+
+动画做完后对每个 `model.blend` 逐帧做了网格互穿检查（BVH 面对撞，配合顶点内外测试交叉验证），并修掉了动画造成的穿模：
+
+- **Go2 / Iris**：无异常。
+- **G1**：垂臂时手掌压进髋部。给两侧肩 roll 关节逐帧叠加 12° 外展后，手–髋、手–躯干、手–膝等对撞全部归零，脚底仍在 `z=0`。
+- **Z1**：47 mm 方块被夹爪上棱咬入。实测这副夹爪在抓取点只张开约 27 mm，且指间空腔中心偏离腕轴约 4 mm；把方块改为 22.5 mm、绕 Z 转到与夹爪同向、并移入空腔中心后，定子与方块 0 面相交。
+- **1:10 赛车**：车壳与轮胎在官方网格上就互穿，属上游资产问题，未改动网格，也不在本页展示。
 
 ## 复现骨架
 
@@ -115,7 +124,7 @@ ffmpeg -framerate 24 -start_number 1 -i renders/anim/frame_%04d.png \
 ## 说明
 
 - 本页为**应用案例文档**，成品 `.blend`、视频、渲染图与第三方网格不随本插件仓库分发；它们保存在本地工作区，各自目录带完整来源与许可说明。
-- 第三方网格归原作者所有，按各自许可使用；名称 / logo 归各自权利人，本案例未获任何厂商背书。
+- 第三方网格归原作者所有，按各自许可使用：四足 Go2、人形 G1、6 轴机械臂 Z1 来自 [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)（BSD-3-Clause），四旋翼 Iris 来自 [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models)（BSD-3-Clause），1:10 RC 赛车来自 [f1tenth-dev/simulator](https://github.com/f1tenth-dev/simulator)（Apache-2.0）；名称 / logo 归各自权利人，本案例未获任何厂商背书。
 
 ---
 
@@ -129,7 +138,7 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **One pipeline, five morphologies**: quadruped, humanoid, 6-DOF arm, quadcopter, 1:10 RC car — no per-robot hardcoding.
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
 - **Limits**: kinematic presentation only (no dynamics/contact physics), simulation-grade meshes, and copyright licenses do not grant trademark or industrial-design rights.
+- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests). Animations that pushed a hand into the hip (G1) or the jaw into the carried block (Z1) were fixed by a 12° shoulder abduction and by sizing/turning the block to the claw's real 27 mm opening respectively; Go2 and Iris were clean.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
-- **Previews**: the looped animations for the quadruped, humanoid, arm and quadcopter are shown above as lightweight GIFs in [`docs/media/`](media/), generated from the rendered MP4s by `scripts/make_readme_gifs.ps1`.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.

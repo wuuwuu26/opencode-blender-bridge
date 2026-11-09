@@ -284,11 +284,11 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
   </tr>
 </table>
 
-GIF 是预渲染 MP4 经 [`scripts/make_readme_gifs.ps1`](scripts/make_readme_gifs.ps1) 转出的轻量预览；网格、`.blend` 与视频保存在本地工作区，各自附带许可说明。1:10 RC 赛车不在本页展示（官方车壳与轮胎本身有互穿），仅保留在本地工作区。
-
 ## 9. 许可与致谢
 
 本项目以 **Apache License 2.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
+
+案例中的机器人网格均为上游官方开源资产，按各自许可使用：Unitree Go2 / G1 / Z1 来自 [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)（BSD-3-Clause），PX4 Iris 来自 [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models)（BSD-3-Clause）。机器人名称与 logo 归各自权利人，本案例未获任何厂商背书。
 
 思路与部分实现参考：
 
