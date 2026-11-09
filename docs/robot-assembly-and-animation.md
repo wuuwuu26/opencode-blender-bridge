@@ -32,7 +32,7 @@
 5. **论文 / 课件 / 网页插图**：带数值报告的正交三视图，风格统一、可溯源、许可清晰。
 6. **下游资产管线对照基准**：结构化 `model.blend` + 渲染 + 报告，可作 glTF 导出、网格简化、材质重映射、姿态估计等任务的输入或对照组。
 
-**边界**：这是**运动学展示**，不是动力学 / 物理仿真（无刚体求解、无接触力学）；网格多为仿真级简化件，非精确 CAD；版权许可（如 BSD-3）不等于商标或外观设计授权，商用需自行核对。
+**边界**：整体以**运动学展示**为主（机械臂、步态、旋翼都是关键帧烘焙），不做完整的动力 / 接触仿真；例外是 Z1 的方块——它在被夹持时是运动学，释放后切换为 Bullet 刚体，受重力落到桌面。网格多为仿真级简化件，非精确 CAD；版权许可（如 BSD-3）不等于商标或外观设计授权，商用需自行核对。
 
 ## 关键工程点（可复现的踩坑结论）
 
@@ -82,7 +82,7 @@
 | --- | --- | --- | --- | --- |
 | 四足 Go2 | `unitree_ros / go2_description`，BSD-3 | URDF FK，12 DOF，官方 DAE→OBJ | 48 帧 trot | FK 误差 1.49e-7；髋–大腿间隙 1.19 mm；四脚 z=0 |
 | 人形 G1 | `unitree_ros / g1_description`，BSD-3 | 39 link / 38 joint / 29 DOF | 96 帧 idle + 挥手 | FK 平移 2.78e-7 m；脚底漂移 0；L/R 对称 1e-5 m；手–髋 0 相交 |
-| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK） | FK 0.000295 mm；7 个抓取位 IK 残差 0；定子–方块 0 面相交 |
+| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK） | FK 0.000295 mm；7 个抓取位 IK 残差 0；定子–方块 0 面相交；释放后刚体落回桌面 |
 | 四旋翼 Iris | `PX4/PX4-gazebo-models`，BSD-3 | 机身 STL 拆件 + 桨 DAE→OBJ | 48 帧桨转 + 悬停 | 电机对角 500 mm；桨毂轴对齐 |
 
 每个成品目录通常含 `model.blend`、`animation.mp4`（+ 部分 `animation.gif`）、`hero.png` / `side.png` / `front.png`、`report.txt`、`PROVENANCE.txt`、许可文本、`progress.json`、`scripts/` 重建脚本、`renders/` 逐帧 PNG。
@@ -93,7 +93,7 @@
 
 - **Go2 / Iris**：无异常。
 - **G1**：垂臂时手掌压进髋部。给两侧肩 roll 关节逐帧叠加 12° 外展后，手–髋、手–躯干、手–膝等对撞全部归零，脚底仍在 `z=0`。
-- **Z1**：47 mm 方块被夹爪上棱咬入。实测这副夹爪在抓取点只张开约 27 mm，且指间空腔中心偏离腕轴约 4 mm；把方块改为 22.5 mm、绕 Z 转到与夹爪同向、并移入空腔中心后，定子与方块 0 面相交。另外修正了桌面顶面高度（原先在 `z = −12.5 mm`，方块放下后会悬空 12.5 mm），现在放置后正好落在台面上。
+- **Z1**：47 mm 方块被夹爪上棱咬入。实测这副夹爪在抓取点只张开约 27 mm，且指间空腔中心偏离腕轴约 4 mm；把方块改为 22.5 mm、绕 Z 转到与夹爪同向、并移入空腔中心后，定子与方块 0 面相交。另外修正了桌面顶面高度（原先在 `z = −12.5 mm`，方块放下后会悬空 12.5 mm）；方块现在是刚体——搬运段用运动学关键帧跟随夹爪，f73 起交给 Bullet，落回桌面后保持静止（点缓存已烘焙进 `model.blend`）。
 
 ## 复现骨架
 
@@ -131,8 +131,8 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **Method**: parse the joint tree, compute `T_link = T_parent · T_joint` and `T_mesh = T_link · T_visual`; verify against an independent FK pass (1e-7 m); keyframe via FK sampling / analytic IK / planar 2-link IK; render with EEVEE; encode with ffmpeg.
 - **One pipeline, four morphologies**: quadruped, humanoid, 6-DOF arm and quadcopter — no per-robot hardcoding.
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
-- **Limits**: kinematic presentation only (no dynamics/contact physics), simulation-grade meshes, and copyright licenses do not grant trademark or industrial-design rights.
-- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests). Animations that pushed a hand into the hip (G1) or the jaw into the carried block (Z1) were fixed by a 12° shoulder abduction and by sizing/turning the block to the claw's real 27 mm opening respectively; the Z1 table top was also corrected to `z=0` so the released block rests on it; Go2 and Iris were clean.
+- **Limits**: kinematic presentation overall (the arm, gaits and rotors are keyed; no contact simulation), except the Z1 block, which becomes a Bullet rigid body once released and settles on the table; simulation-grade meshes; and copyright licenses do not grant trademark or industrial-design rights.
+- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests). Animations that pushed a hand into the hip (G1) or the jaw into the carried block (Z1) were fixed by a 12° shoulder abduction and by sizing/turning the block to the claw's real 27 mm opening respectively; the Z1 table top was corrected to `z=0` and the block now switches from kinematic carry to a simulated drop at release, so it rests on the table; Go2 and Iris were clean.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.
