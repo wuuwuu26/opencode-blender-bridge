@@ -82,7 +82,7 @@
 | --- | --- | --- | --- | --- |
 | 四足 Go2 | `unitree_ros / go2_description`，BSD-3 | URDF FK，12 DOF，官方 DAE→OBJ | 48 帧 trot | FK 误差 1.49e-7；髋–大腿间隙 1.19 mm；四脚 z=0 |
 | 人形 G1 | `unitree_ros / g1_description`，BSD-3 | 39 link / 38 joint / 29 DOF | 96 帧 idle + 挥手 | FK 平移 2.78e-7 m；脚底漂移 0；L/R 对称 1e-5 m；手–髋 0 相交 |
-| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK，45° 侧向抓取） | FK 0.000198 mm；动指–球布尔相交 0.006 cm³；释放后刚体落回桌面 |
+| 6 轴臂 Z1 | `unitree_ros / z1_description`，BSD-3 | base + 6 关节 + 夹爪 | 96 帧抓取-搬运-放置（IK，45° 侧向抓取） | FK 0.000198 mm；动指–球布尔相交 0.000 / 0.002 cm³；释放后球落回支座 |
 | 四旋翼 Iris | `PX4/PX4-gazebo-models`，BSD-3 | 机身 STL 拆件 + 桨 DAE→OBJ | 48 帧桨转 + 悬停 | 电机对角 500 mm；桨毂轴对齐 |
 
 每个成品目录通常含 `model.blend`、`animation.mp4`（+ 部分 `animation.gif`）、`hero.png` / `side.png` / `front.png`、`report.txt`、`PROVENANCE.txt`、许可文本、`progress.json`、`scripts/` 重建脚本、`renders/` 逐帧 PNG。
@@ -93,7 +93,7 @@
 
 - **Go2 / Iris**：无异常。
 - **G1**：垂臂时手掌压进髋部。给两侧肩 roll 关节逐帧叠加 12° 外展后，手–髋、手–躯干、手–膝等对撞全部归零，脚底仍在 `z=0`。
-- **Z1**：这副夹爪的指口是个很浅的 V，从正上方接近时工件只能落在指尖——22.5 mm 立方体有 **42% 体积埋在动指实体里**（布尔实测 4.44 / 10.64 cm³）。改成腕部 45° 侧向接近、收拢轴保持水平后，工件换成 15 mm 球：球嵌在 V 形指口里，布尔相交降到 **0.006 cm³**（仅指面接触）。桌面顶面也修正到 `z = 0`（原先低 12.5 mm，放下后悬空）；球现在是刚体——搬运段运动学跟随，f73 起交给 Bullet 落回桌面（点缓存已烘焙进 `model.blend`）。
+- **Z1**：这副夹爪的指口是个很浅的 V，从正上方接近时工件只能落在指尖——22.5 mm 立方体有 **42% 体积埋在动指实体里**（布尔实测 4.44 / 10.64 cm³）。改成腕部 45° 侧向接近、收拢轴保持水平，工件换成 **21.8 mm 球**并放在 12 mm 细柱支座上、球心深入指口 27 mm，布尔相交降到 **0.000 / 0.002 cm³**，两指都能接触。桌面顶面也修正到 `z = 0`；球是刚体——搬运段运动学跟随，f73 起交给 Bullet 落在放置点支座上（点缓存已烘焙进 `model.blend`）。
 
 ## 复现骨架
 
@@ -132,7 +132,7 @@ This is an **application example** of the OpenCode × Blender Bridge: a reproduc
 - **One pipeline, four morphologies**: quadruped, humanoid, 6-DOF arm and quadcopter — no per-robot hardcoding.
 - **Use cases**: robot visualization & marketing imagery, simulation-asset → interactive-asset (glTF) bridging, kinematics teaching and URDF correctness checks, batch animation-asset generation, paper/course figures, and a baseline for downstream asset pipelines.
 - **Limits**: kinematic presentation overall (the arm, gaits and rotors are keyed; no contact simulation), except the Z1 ball, which becomes a Bullet rigid body once released and settles on the table; simulation-grade meshes; and copyright licenses do not grant trademark or industrial-design rights.
-- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests; exact booleans where the mesh is closed). Animations that pushed a hand into the hip (G1) or the jaw into the carried part (Z1) were fixed by a 12° shoulder abduction and by re-solving the Z1 pose to a 45° side grasp with a 15 mm ball (boolean overlap down to 0.006 cm³) respectively; the Z1 table top was corrected to `z=0` and the part now switches from kinematic carry to a simulated drop at release, so it rests on the table; Go2 and Iris were clean.
+- **Interpenetration check**: every `model.blend` was scanned frame by frame for mesh intersections (BVH face overlap plus point-inside tests; exact booleans where the mesh is closed). Animations that pushed a hand into the hip (G1) or the jaw into the carried part (Z1) were fixed by a 12° shoulder abduction and by re-solving the Z1 pose to a 45° side grasp of a 21.8 mm ball presented on a small post (boolean overlap 0.000 / 0.002 cm³) respectively; the Z1 table top was corrected to `z=0` and the part now switches from kinematic carry to a simulated drop at release, so it rests on the post; Go2 and Iris were clean.
 - Bridge role: the plugin drives a live Blender session (GUI) or `blender -b` headless and returns frames; the assembly itself is plain `bpy` code and reproduces without the plugin.
 
 Deliverables and third-party meshes are kept in the local workspace with their own `report.txt` / `PROVENANCE.txt` / license files; they are not distributed with this plugin repository.
