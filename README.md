@@ -269,7 +269,7 @@ skills/cad-modeling/SKILL.md            Atta parametric CAD skill
 
 ## 8. Example: robot mesh assembly and animation
 
-A worked application example of this bridge: turn open-source robot descriptions (URDF / xacro / SDF) and their official meshes into Blender scenes with a link/joint hierarchy, materials and looped animations, then batch-render stills, MP4/GIF and verification reports. One generic forward-kinematics pipeline was reused across a quadruped, a humanoid, a 6-DOF arm, a quadcopter and a 1:10 RC car — see [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md) for the method, use cases, measured results and reproduction steps.
+A worked application example of this bridge: turn open-source robot descriptions (URDF / xacro / SDF) and their official meshes into Blender scenes with a link/joint hierarchy, materials and looped animations, then batch-render stills, MP4/GIF and verification reports. One generic forward-kinematics pipeline was reused across a quadruped, a humanoid, a 6-DOF arm and a quadcopter — see [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md) for the method, use cases, measured results and reproduction steps.
 
 <table>
   <tr>

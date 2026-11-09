@@ -259,7 +259,7 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 
 ## 8. 应用案例：机器人网格装配与动画生成
 
-本桥接插件的一个实际应用案例：把开源机器人描述文件（URDF / xacro / SDF）及其官方网格，装配成带层级骨架、材质和循环动画的 Blender 场景，并批量输出三视图、视频与数值验证报告。同一套通用正向运动学（FK）管线已复用于四足机器狗、人形机器人、6 轴机械臂、四旋翼无人机和 1:10 RC 赛车五种形态。方法、用途、实测结果与复现步骤见 [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md)。
+本桥接插件的一个实际应用案例：把开源机器人描述文件（URDF / xacro / SDF）及其官方网格，装配成带层级骨架、材质和循环动画的 Blender 场景，并批量输出三视图、视频与数值验证报告。同一套通用正向运动学（FK）管线已复用于四足机器狗、人形机器人、6 轴机械臂和四旋翼无人机四种形态。方法、用途、实测结果与复现步骤见 [docs/robot-assembly-and-animation.md](docs/robot-assembly-and-animation.md)。
 
 <table>
   <tr>

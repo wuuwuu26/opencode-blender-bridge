@@ -13,9 +13,6 @@ $items = @(
   @{ name = "z1";     src = "robot_variants\z1_arm\animation.mp4";        fps = 12 },
   @{ name = "drone";  src = "robot_variants\drone\animation.mp4";         fps = 12 }
 )
-# The 1:10 RC car is intentionally not published as a preview: the upstream
-# chassis shell and tyre meshes interpenetrate, which shows as clipping when
-# the wheel turns. Build it locally if needed, but do not add it here.
 
 foreach ($it in $items) {
   $src = Join-Path $root $it.src
