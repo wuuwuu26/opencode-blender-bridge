@@ -318,7 +318,7 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 
 <p align="center">
   <img src="docs/media/orbital-megastructure.gif" width="720" alt="程序化生成的轨道巨构"><br>
-  <sub><b>轨道巨构</b> — 1280×720 / 8 fps 动图：旋转环自转、太阳能翼对日跟踪、散热板展开、飞船对接、机械臂屈伸。全部几何程序化生成、实时 driver、无导入模型。</sub>
+  <sub><b>轨道巨构</b> — 960×540 / 8 fps 动图：旋转环自转、太阳能翼对日跟踪、散热板展开、飞船对接、机械臂屈伸。全部几何程序化生成、实时 driver、无导入模型。</sub>
 </p>
 
 与机器人案例一致，`.blend`、视频、静帧与复现脚本保存在本地工作区、不随本仓库分发；仓库内只含文档与演示 GIF。

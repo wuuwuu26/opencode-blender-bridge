@@ -8,10 +8,10 @@
 
 ## 动画演示
 
-下面这段循环动图是从案例 `.blend` 直接渲染、再用 ffmpeg 转成的全分辨率 GIF（1280×720，不压缩）；相机做螺旋环绕推近，叠加场景内全部实时动画。
+下面这段循环动图是从案例 `.blend` 直接渲染、再用 ffmpeg 转成的 GIF（960×540，不压缩）；相机做螺旋环绕推近，叠加场景内全部实时动画。
 
 <img src="media/orbital-megastructure.gif" width="900" alt="Orbital megastructure: spinning ring, solar tracking, deploying radiators, docking"><br>
-<sub><b>轨道巨构</b> — 10 秒 / 8 fps 电影运镜（1280×720 全分辨率）：旋转环自转、太阳能翼对日跟踪、散热板展开、机械臂屈伸、飞船对接、屏蔽壳反旋</sub>
+<sub><b>轨道巨构</b> — 10 秒 / 8 fps 电影运镜（960×540）：旋转环自转、太阳能翼对日跟踪、散热板展开、机械臂屈伸、飞船对接、屏蔽壳反旋</sub>
 
 ## 背景与目标
 
@@ -84,7 +84,7 @@ driver 用 `frame_current` 作单一变量（`SCRIPTED` + `SINGLE_PROP`），在
 | 材质 | 19 类 PBR 材质（拉丝铝 / 陶瓷 / 金箔 MLI / 深蓝光伏 / 银白散热 / 发光窗 / 铜…），含程序化皱褶法线 |
 | 静帧 | `hero_final.png` / `wide.png`，1600×900，EEVEE 128 samples |
 | 演示视频 | `ORBITAL_MEGASTRUCTURE_demo.mp4`，H.264 / 1280×720 / 24 fps / 10 s / 240 帧 / 4.06 MB |
-| 循环动图 | `docs/media/orbital-megastructure.gif`，1280×720 全分辨率 / 8 fps / 80 帧 / 256 色 / 循环（约 21 MB，不压缩） |
+| 循环动图 | `docs/media/orbital-megastructure.gif`，960×540 / 8 fps / 80 帧 / 256 色 / 循环（约 12.6 MB，不压缩） |
 | 导出 | `ORBITAL_MEGASTRUCTURE.glb`（含 PBR 材质，5.4 MB）、`.blend` 工程文件 |
 | 审计 | `scene.audit`：仅 2 个星场点云「空网格」提示（GN 实例化，预期） |
 
@@ -106,9 +106,9 @@ blender -b ORBITAL_MEGASTRUCTURE.blend --python render_video.py
 pwsh encode_video.ps1
 pwsh encode_video_titles.ps1
 
-# 序列 → GIF（全分辨率、不压缩）
+# 序列 → GIF（960×540、不压缩）
 ffmpeg -i ORBITAL_MEGASTRUCTURE_demo.mp4 \
-  -vf "fps=8,split[s0][s1];[s0]palettegen=max_colors=256:stats_mode=full[p];[s1][p]paletteuse=dither=sierra2_4a:diff_mode=none" \
+  -vf "fps=8,scale=960:540:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=256:stats_mode=full[p];[s1][p]paletteuse=dither=sierra2_4a:diff_mode=none" \
   -loop 0 orbital-megastructure.gif
 ```
 
@@ -133,7 +133,7 @@ This is an **application example** of the OpenCode × Blender Bridge: starting f
 - **Rotating / non-rotating split** — the credibility core: the habitat ring + spokes spin about Z for artificial gravity, while the axial keel, solar wings, radiators, antenna, arm and spacecraft stay on the non-rotating spine; visible bearing / slip-ring / roll-ring hardware marks the interface. A sparse regolith shield counter-rotates very slowly (0.07 rpm class).
 - **Live animation, no keyframe baking**: every mechanism is a `SCRIPTED` driver on `frame_current` — ring spin, SARJ sun tracking, BGA pitch, dual-axis antenna, arm joints, an eased radiator deployment (first 140 frames), a docking approach that latches, and the slow shield counter-rotation. Scrubbing the timeline animates everything.
 - **Photoreal look**: 19 PBR materials with procedural micro-detail (brushed metal, crumpled gold MLI, deep-blue PV cells, emissive windows), three-tier greeble density, a single hard sun + cold-blue earthshine rim + near-black procedural starfield + fog-glow bloom; hard two-tone lighting rather than flat ambient.
-- **Deliverables (measured)**: 360 objects / ~63k polygons; 1600×900 EEVEE stills; a 10 s / 24 fps / 240-frame 1280×720 H.264 demo (4 MB); a full-resolution 1280×720 / 8 fps looping GIF (uncompressed, 256 colours); a PBR GLB and the `.blend`. `scene.audit` is clean apart from two expected star-field point clouds (GN-instanced, faceless source meshes).
+- **Deliverables (measured)**: 360 objects / ~63k polygons; 1600×900 EEVEE stills; a 10 s / 24 fps / 240-frame 1280×720 H.264 demo (4 MB); a 960×540 / 8 fps looping GIF (uncompressed, 256 colours); a PBR GLB and the `.blend`. `scene.audit` is clean apart from two expected star-field point clouds (GN-instanced, faceless source meshes).
 - **Blender 5.3 notes**: the compositor moved to `scene.compositing_node_group`; the bridge's `exec` has no `__file__`, so `run.py` infers its directory via `SS_DIR` / `__file__` / `bpy.data.filepath` fallbacks. The full rebuild was verified headless with `blender -b --python run.py` (8 phases / 360 objects).
 - **Bridge role**: the plugin drives a live Blender GUI (launch → `blender_rt_do` → `blender_rt_see` → `blender_rt_plan` audit/render/export), runs the 240-frame render as a background job, and returns frames. The modeling is plain `bpy`/`bmesh`/Geometry Nodes and reproduces with `blender -b` without the plugin.
 

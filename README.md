@@ -326,7 +326,7 @@ A second worked example, this time with **zero external 3D assets**: starting fr
 
 <p align="center">
   <img src="docs/media/orbital-megastructure.gif" width="720" alt="Procedural orbital megastructure"><br>
-  <sub><b>Orbital megastructure</b> — 1280×720, 8 fps GIF: spinning ring, solar tracking, deploying radiators, docking, 7-DOF arm. All geometry procedural, live drivers, no imported models.</sub>
+  <sub><b>Orbital megastructure</b> — 960×540, 8 fps GIF: spinning ring, solar tracking, deploying radiators, docking, 7-DOF arm. All geometry procedural, live drivers, no imported models.</sub>
 </p>
 
 As with the robot example, the `.blend`, video, stills and build scripts stay in the local workspace and are not distributed with this repository; only the write-up and the demo GIF are included.
