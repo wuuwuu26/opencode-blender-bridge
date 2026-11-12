@@ -320,11 +320,22 @@ A worked application example of this bridge: turn open-source robot descriptions
   </tr>
 </table>
 
-## 10. License and credits
+## 10. Example: procedural animated orbital megastructure
+
+A second worked example, this time with **zero external 3D assets**: starting from the empty default scene, a photoreal, fully animated space station megastructure is generated entirely from procedural `bpy` geometry (torus, triangular space-frame trusses, a parabolic dish, merged greebles, Geometry Nodes star instancing). The spinning habitat ring + spokes are separated from the non-rotating axial keel, dual-gimbal solar wings, deployable radiators, antenna, 7-DOF arm and docking craft by visible bearing / slip-ring hardware — the rotating / non-rotating split that makes a rotating station credible. Every mechanism is a live driver (ring spin, sun tracking, radiator deployment, docking approach, slow shield counter-rotation), with no keyframe baking. See [docs/orbital-megastructure.md](docs/orbital-megastructure.md) for the structural grammar, the 8-phase build, the animation list, measured results and reproduction steps.
+
+<p align="center">
+  <img src="docs/media/orbital-megastructure.gif" width="400" alt="Procedural orbital megastructure"><br>
+  <sub><b>Orbital megastructure</b> — 10 s / 24 fps cinematic orbit: spinning ring, solar tracking, deploying radiators, docking, 7-DOF arm. All geometry procedural, live drivers, no imported models.</sub>
+</p>
+
+As with the robot example, the `.blend`, video, stills and build scripts stay in the local workspace and are not distributed with this repository; only the write-up and the demo GIF are included.
+
+## 11. License and credits
 
 Licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-The robot meshes in the example are the official upstream assets, used under their own licenses: Unitree Go2, G1 and Z1 from [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros) (BSD-3-Clause), and PX4 Iris from [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models) (BSD-3-Clause). Robot names and logos belong to their respective owners; this example implies no endorsement.
+The robot meshes in the robot-assembly example are the official upstream assets, used under their own licenses: Unitree Go2, G1 and Z1 from [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros) (BSD-3-Clause), and PX4 Iris from [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models) (BSD-3-Clause). Robot names and logos belong to their respective owners; this example implies no endorsement. The orbital-megastructure example uses no external 3D assets at all (all geometry is generated in code).
 
 Inspired by and in a few small places adapted from:
 

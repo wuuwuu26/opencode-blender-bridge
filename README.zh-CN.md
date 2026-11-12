@@ -310,11 +310,26 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
   </tr>
 </table>
 
-## 10. 许可与致谢
+---
+
+## 10. 应用案例：程序化生成的会动的超写实太空站巨构
+
+本桥接插件的另一个实际应用案例，特点是**零外部 3D 资产**：从空的初始场景出发，用纯 `bpy` 程序化几何（torus、三角格构桁架、抛物面碟、合并网格 greeble、Geometry Nodes 星场）生成一个超写实、带完整实时动画的轨道巨构。旋转居住环 + 辐条，与非旋转的中轴龙骨、双轴太阳能翼、可展开散热板、天线、7 自由度机械臂、对接飞船，通过可见的轴承 / 滑环硬件分离——这正是旋转站可信度的关键。所有机构都是实时 driver（环自转、对日跟踪、散热板展开、飞船对接、屏蔽壳慢速反旋），不烘焙关键帧。结构语法、8 阶段建模、动画清单、实测结果与复现步骤见 [docs/orbital-megastructure.md](docs/orbital-megastructure.md)。
+
+<p align="center">
+  <img src="docs/media/orbital-megastructure.gif" width="400" alt="程序化生成的轨道巨构"><br>
+  <sub><b>轨道巨构</b> — 10 秒 / 24 fps 电影运镜：旋转环自转、太阳能翼对日跟踪、散热板展开、飞船对接、机械臂屈伸。全部几何程序化生成、实时 driver、无导入模型。</sub>
+</p>
+
+与机器人案例一致，`.blend`、视频、静帧与复现脚本保存在本地工作区、不随本仓库分发；仓库内只含文档与演示 GIF。
+
+---
+
+## 11. 许可与致谢
 
 本项目以 **Apache License 2.0** 发布，见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
 
-案例中的机器人网格均为上游官方开源资产，按各自许可使用：Unitree Go2 / G1 / Z1 来自 [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)（BSD-3-Clause），PX4 Iris 来自 [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models)（BSD-3-Clause）。机器人名称与 logo 归各自权利人，本案例未获任何厂商背书。
+机器人装配案例中的网格均为上游官方开源资产，按各自许可使用：Unitree Go2 / G1 / Z1 来自 [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)（BSD-3-Clause），PX4 Iris 来自 [PX4/PX4-gazebo-models](https://github.com/PX4/PX4-gazebo-models)（BSD-3-Clause）。机器人名称与 logo 归各自权利人，本案例未获任何厂商背书。太空站巨构案例不含任何外部 3D 资产（全部几何由代码生成）。
 
 思路与部分实现参考：
 
