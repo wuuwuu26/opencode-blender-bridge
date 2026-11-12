@@ -325,7 +325,7 @@ A worked application example of this bridge: turn open-source robot descriptions
 A second worked example, this time with **zero external 3D assets**: starting from the empty default scene, a photoreal, fully animated space station megastructure is generated entirely from procedural `bpy` geometry (torus, triangular space-frame trusses, a parabolic dish, merged greebles, Geometry Nodes star instancing). The spinning habitat ring + spokes are separated from the non-rotating axial keel, dual-gimbal solar wings, deployable radiators, antenna, 7-DOF arm and docking craft by visible bearing / slip-ring hardware — the rotating / non-rotating split that makes a rotating station credible. Every mechanism is a live driver (ring spin, sun tracking, radiator deployment, docking approach, slow shield counter-rotation), with no keyframe baking. See [docs/orbital-megastructure.md](docs/orbital-megastructure.md) for the structural grammar, the 8-phase build, the animation list, measured results and reproduction steps.
 
 <p align="center">
-  <img src="docs/media/orbital-megastructure.gif" width="400" alt="Procedural orbital megastructure"><br>
+  <img src="docs/media/orbital-megastructure.gif" width="720" alt="Procedural orbital megastructure"><br>
   <sub><b>Orbital megastructure</b> — 10 s / 24 fps cinematic orbit: spinning ring, solar tracking, deploying radiators, docking, 7-DOF arm. All geometry procedural, live drivers, no imported models.</sub>
 </p>
 

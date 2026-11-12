@@ -317,7 +317,7 @@ skills/cad-modeling/SKILL.md            Atta 参数化 CAD skill
 本桥接插件的另一个实际应用案例，特点是**零外部 3D 资产**：从空的初始场景出发，用纯 `bpy` 程序化几何（torus、三角格构桁架、抛物面碟、合并网格 greeble、Geometry Nodes 星场）生成一个超写实、带完整实时动画的轨道巨构。旋转居住环 + 辐条，与非旋转的中轴龙骨、双轴太阳能翼、可展开散热板、天线、7 自由度机械臂、对接飞船，通过可见的轴承 / 滑环硬件分离——这正是旋转站可信度的关键。所有机构都是实时 driver（环自转、对日跟踪、散热板展开、飞船对接、屏蔽壳慢速反旋），不烘焙关键帧。结构语法、8 阶段建模、动画清单、实测结果与复现步骤见 [docs/orbital-megastructure.md](docs/orbital-megastructure.md)。
 
 <p align="center">
-  <img src="docs/media/orbital-megastructure.gif" width="400" alt="程序化生成的轨道巨构"><br>
+  <img src="docs/media/orbital-megastructure.gif" width="720" alt="程序化生成的轨道巨构"><br>
   <sub><b>轨道巨构</b> — 10 秒 / 24 fps 电影运镜：旋转环自转、太阳能翼对日跟踪、散热板展开、飞船对接、机械臂屈伸。全部几何程序化生成、实时 driver、无导入模型。</sub>
 </p>
 
